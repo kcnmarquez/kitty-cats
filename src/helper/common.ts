@@ -1,5 +1,3 @@
-export const BASE_URL = 'https://api.thecatapi.com/v1';
-
 export interface Breed {
   id: string, // e.g. 'abys'
   description: string,

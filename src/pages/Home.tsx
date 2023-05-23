@@ -1,25 +1,28 @@
-import axios from 'axios';
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './Home.scss';
-import { BASE_URL, Breed, Cat } from '../common';
+import { Breed, Cat } from '../helper/common';
+import { getBreeds, getCats } from '../helper/api';
 import { ExclamationTriangleFill } from 'react-bootstrap-icons';
 
 function Home() {
   const [selectedBreed, setSelectedBreed] = React.useState<string>('');
   const [breeds, setBreeds] = React.useState<ReadonlyArray<Breed>>([]);
   const [cats, setCats] = React.useState<ReadonlyArray<Cat>>([]);
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
+  const [catCount, setCatCount] = React.useState(0);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [canLoadMore, setCanLoadMore] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
 
   const [searchParams] = useSearchParams();
 
+  const PAGE_LIMIT = 10;
+
   React.useEffect(() => {
-    axios.get(`${BASE_URL}/breeds`)
+    getBreeds()
       .then(response => {
-        setBreeds(response.data);
+        setBreeds(response);
       });
 
     const breed = searchParams.get('breed');
@@ -30,31 +33,32 @@ function Home() {
   }, [searchParams]);
 
   React.useEffect(() => {
-    if (currentPage === 1 && cats.length > 0) {
-      setCanLoadMore(true);
-    }
-  }, [cats, currentPage]);
+    if (catCount <= 0) return;
+
+    const maxPages = Math.ceil(catCount / PAGE_LIMIT);
+    setCanLoadMore(maxPages > currentPage);
+  }, [catCount, currentPage]);
 
   React.useEffect(() => {
     if (!selectedBreed) return;
 
     setIsLoading(true);
     setHasError(false);
+    setCats([]);
+    setCatCount(0);
 
-    axios.get(`${BASE_URL}/images/search?order=DESC&page=1&limit=50&breed_id=${selectedBreed}`)
-      .then(response => {
+    getCats(selectedBreed)
+      .then(({ resultsCount, data }) => {
         setIsLoading(false);
 
-        const foo = response.headers['Pagination-Count'];
-        console.log('headers: ', foo);
-        console.log('response: ', response);
+        setCatCount(resultsCount);
 
-        if (response.data.length === 0) {
+        if (data.length === 0) {
           // invalid breed ID
           setSelectedBreed('');
         }
 
-        setCats(response.data);
+        setCats(data);
         setCurrentPage(1);
       })
       .catch(error => {
@@ -63,34 +67,23 @@ function Home() {
       });
   }, [selectedBreed]);
 
+  const updateCats = React.useCallback((newCats: ReadonlyArray<Cat>) => {
+    setCats((c) => [...c, ...newCats]);
+  }, []);
+
   React.useEffect(() => {
     if (currentPage === 1) return;
 
     setIsLoading(true);
     setHasError(false);
 
-    axios.get(`${BASE_URL}/images/search?order=DESC&page=${currentPage}&limit=10&breed_id=${selectedBreed}`)
-      .then(response => {
+    getCats(selectedBreed, currentPage - 1)
+      .then(({ resultsCount, data }) => {
         setIsLoading(false);
-
-        const foo = response.headers['Pagination-Count'];
-        console.log('headers 2: ', foo);
-        console.log('response data 2: ', response.data);
-        const tempCats = response.data;
-
-        const newCats = cats.map(c => c.id).filter(function(n) {
-          return tempCats.map((c: Cat) => c.id).indexOf(n) === -1;
-        });
-        console.log('tempCats: ', tempCats);
-        console.log('newCats: ', newCats);
-        if (newCats.length === 0) {
-          setCanLoadMore(false);
-          return;
-        };
-
-        setCats(tempCats);
+        setCatCount(resultsCount);
+        updateCats(data);
       });
-  }, [currentPage, cats, selectedBreed]);
+  }, [currentPage, selectedBreed, updateCats]);
 
   const onBreedSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedBreed(event.target.value);
@@ -109,17 +102,10 @@ function Home() {
         Apologies but we could not load the cat for you at this time! Miau!
       </div>
     );
-  } else if (isLoading) {
-    content = (
-      <div className="d-flex align-items-center mb-3">
-        <strong>Loading...</strong>
-        <div className="spinner-border ms-auto" role="status" aria-hidden="true"></div>
-      </div>
-    );
   } else {
     content = (
       <div className="row">
-        {cats.length === 0 &&
+        {cats.length === 0 && !isLoading &&
           <div className="col-12">No cats available</div>
         }
         {cats.map(cat => {
@@ -141,7 +127,7 @@ function Home() {
   return (
     <div className="Home">
       <div className="container">
-        <h1>Cat Browser</h1>
+        <h1>Kitty Cats</h1>
 
         <div className="row">
           <div className="col-md-4 col-sm-6 col-12 mb-3">
@@ -164,6 +150,12 @@ function Home() {
         </div>
 
         {content}
+        {isLoading &&
+          <div className="d-flex align-items-center mb-3">
+            <strong>Loading...</strong>
+            <div className="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+          </div>
+        }
 
         {canLoadMore && !hasError &&
           <div className="row">

@@ -1,9 +1,9 @@
-import axios from 'axios';
 import React from 'react';
 import { ArrowLeft, ExclamationTriangleFill } from 'react-bootstrap-icons';
 import { useParams } from 'react-router-dom';
 import './CatProfile.scss';
-import { BASE_URL, Cat } from '../common';
+import { Cat } from '../helper/common';
+import { getCat } from '../helper/api';
 
 function CatProfile() {
   const [cat, setCat] = React.useState<Cat>();
@@ -12,10 +12,12 @@ function CatProfile() {
   const { id } = useParams();
 
   React.useEffect(() => {
-    axios.get(`${BASE_URL}/images/${id}`)
+    if (!id) return;
+
+    getCat(id)
       .then(response => {
         setHasError(false);
-        setCat(response.data);
+        setCat(response);
       })
       .catch(error => {
         console.error(error);
@@ -53,7 +55,7 @@ function CatProfile() {
             </a>
           </div>
           {hasError &&
-            <div className="alert alert-danger m-4" role="alert">
+            <div className="alert alert-danger m-0" role="alert">
               <ExclamationTriangleFill className="me-2" size={24} />
               Apologies but we could not load the cat for you at this time! Miau!
             </div>
