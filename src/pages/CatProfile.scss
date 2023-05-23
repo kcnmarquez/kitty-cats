@@ -1,0 +1,22 @@
+.Cat {
+  padding: 20px 0;
+
+  & .card {
+    border: 2px solid #adb5bd;
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  & .card-img {
+    align-self: center;
+    max-width: 500px;
+  }
+}
+
+.back-btn {
+  text-decoration: none;
+
+  &:hover {
+    background-color: #dfe6ed;
+  }
+}
