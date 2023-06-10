@@ -2,10 +2,13 @@
 
 This project is a simple cat browser bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+NOTE: See deployed version in https://kcnmarquez.github.io/kitty-cats/.
+
 ## Routes
 
-- `/` - allows the user to select a cat breed and then displays cats under that breed; supports pagination
-- `/:id` - displays info on a specific breed given a cat ID
+- `/` or `/#/` - allows the user to select a cat breed and then displays cats under that breed; supports pagination
+- `/#/?breed=:breed_id` - shows the home page with a pre-selected breed
+- `/#/:id` - displays info on a specific breed given a cat ID
 
 ## Technologies/libraries used
 
@@ -43,3 +46,9 @@ You can then run the following to have the app run with the production build:
 npm install -g serve
 serve -s build
 ```
+
+## Deploy via `gh-pages`
+
+To deploy to github pages, simply do `npm run deploy` after pushing your code.
+
+Make sure that the repository has been configured correctly. To check, go to the **Settings** tab and click on the **Pages** menu. **Source** should be _Deploy from a branch_, and **Branch** should be _gh-pages_ using the _/ (root)_ folder. You should also see a link to the deployed application.
