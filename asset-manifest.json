@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/kitty-cats/static/css/main.34cc370e.css",
+    "main.js": "/kitty-cats/static/js/main.b046874b.js",
+    "static/js/787.3f7164e8.chunk.js": "/kitty-cats/static/js/787.3f7164e8.chunk.js",
+    "index.html": "/kitty-cats/index.html",
+    "main.34cc370e.css.map": "/kitty-cats/static/css/main.34cc370e.css.map",
+    "main.b046874b.js.map": "/kitty-cats/static/js/main.b046874b.js.map",
+    "787.3f7164e8.chunk.js.map": "/kitty-cats/static/js/787.3f7164e8.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.34cc370e.css",
+    "static/js/main.b046874b.js"
+  ]
+}
