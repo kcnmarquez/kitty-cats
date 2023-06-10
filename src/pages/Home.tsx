@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import './Home.scss';
 import { Breed, Cat } from '../helper/common';
 import { getBreeds, getCats } from '../helper/api';
@@ -114,7 +114,7 @@ function Home() {
               <div className="card">
               <img className="card-img cat-image" alt="cat" src={cat.url} />
               <div className="card-body d-grid gap-2 p-0 mt-3">
-                <a className="btn btn-primary stretched-link" href={`/${cat.id}`}>View details</a>
+                <Link to={`/${cat.id}`} className="btn btn-primary stretched-link">View details</Link>
               </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeft, ExclamationTriangleFill } from 'react-bootstrap-icons';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import './CatProfile.scss';
 import { Cat } from '../helper/common';
 import { getCat } from '../helper/api';
@@ -49,10 +49,10 @@ function CatProfile() {
       <div className="container">
         <div className="card">
           <div className="mb-2">
-            <a className="btn btn-link back-btn" href={backLink}>
+            <Link to={backLink} className="btn btn-link back-btn">
               <ArrowLeft className="me-2" />
               Back
-            </a>
+            </Link>
           </div>
           {hasError &&
             <div className="alert alert-danger m-0" role="alert">
